@@ -1,13 +1,11 @@
 import { haversine } from "./module/utils/math.js";
+import { getCinemaResults } from "./api.js";
 
 const elements = {
   geolocation: document.querySelector("#coordinates"),
   cinemaList: document.querySelector("#cinemaList"),
   cinemaDistance: document.querySelector("#cinemaDistance"),
-  myAddress: document.querySelector("#myAdress"),
 };
-
-const baseUrl = "https://api-adresse.data.gouv.fr";
 
 // Fonction pour récupérer la géolocalisation de l'utilisateur
 function getGeolocation() {
@@ -25,16 +23,6 @@ function getGeolocation() {
 }
 
 // Fonction pour récupérer les résultats des cinémas depuis l'API
-function getCinemaResults() {
-  return fetch(
-    "https://data.culture.gouv.fr/api/explore/v2.1/catalog/datasets/etablissements-cinematographiques/records"
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Data API:", data);
-      return data.results;
-    });
-}
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -45,22 +33,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Afficher la géolocalisation
     elements.geolocation.textContent = `Latitude: ${userLocation.latitude}, Longitude: ${userLocation.longitude}`;
 
-    // Récupérer l'adresse via une API
-    const addressResponse = await fetch(
-      `${baseUrl}/reverse?lat=${userLocation.latitude}&lon=${userLocation.longitude}`
-    );
-    const addressData = await addressResponse.json();
-    const userAddress = addressData.features[0].properties.label;
-
-    // Afficher l'adresse
-    elements.myAddress.textContent = `Mon adresse : ${userAddress}`;
-
     // Récupérer les résultats des cinémas depuis l'API
     const cinemaResults = await getCinemaResults();
-    console.log("Cinema Results:", cinemaResults);
+    console.log("Cinema Resultat:", cinemaResults);
 
     cinemaResults.forEach((cinema) => {
-      // Assurez-vous que cinema.geolocalisation et cinema.nom existent avant de les utiliser
       if (
         cinema.geolocalisation &&
         cinema.geolocalisation.lat &&
